@@ -14,9 +14,10 @@ public class EnemyAnimatorController : MonoBehaviour
     {
         // Your logic to determine if the enemy should walk
         // For example, if the player is nearby, set _isWalking to true
+Animator animator = GetComponent<Animator>();
+animator.Play("MacarenaDance");
 
-        // Update the animator parameter
-        _animator.SetBool("isWalking", _isWalking);
+Debug.Log(animator.GetCurrentAnimatorStateInfo(0).IsName("MacarenaDance"));
     }
 }
 

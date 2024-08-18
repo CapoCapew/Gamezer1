@@ -3,45 +3,86 @@ using UnityEngine.AI;
 
 public class EnemyAI : MonoBehaviour
 {
-    public Transform player; // Référence au joueur
-    public float detectionRange = 10f; // Portée de détection
-    public float attackRange = 2f; // Portée d'attaque
-    public float attackCooldown = 2f; // Temps entre les attaques
-    public Animator animator; // Référence à l'animator
-	
-    private NavMeshAgent navMeshAgent;
-    private float lastAttackTime;
+    public Transform player;
+    public float detectionRange = 10f;
+    public float attackRange = 2f;
+    public float patrolTime = 5f;
+    public Animator animator;
 
-    private void Start()
+    private NavMeshAgent agent;
+    private float patrolTimer;
+    private Vector3 patrolTarget;
+
+    void Start()
     {
-        navMeshAgent = GetComponent<NavMeshAgent>();
-        lastAttackTime = -attackCooldown; // Permet à l'ennemi d'attaquer immédiatement au démarrage
+        agent = GetComponent<NavMeshAgent>();
+        patrolTimer = patrolTime;
+        SetNewPatrolTarget();
+        agent.updatePosition = false; // Désactiver la mise à jour automatique de la position
     }
 
-    private void Update()
+    void Update()
     {
-        // Vérifie si le joueur est dans la portée de détection
-        if (Vector3.Distance(transform.position, player.position) <= detectionRange)
-        {
-            // Déplace l'ennemi vers le joueur
-            navMeshAgent.SetDestination(player.position);
+        float distanceToPlayer = Vector3.Distance(player.position, transform.position);
 
-            // Vérifie si le joueur est dans la portée d'attaque
-            if (Vector3.Distance(transform.position, player.position) <= attackRange)
-            {
-                // Vérifie le temps écoulé depuis la dernière attaque
-                if (Time.time - lastAttackTime >= attackCooldown)
-                {
-                    // Attaque le joueur (vous pouvez ajouter votre propre logique ici)
-                    animator.SetTrigger("Attack"); // Déclenche l'animation d'attaque
-                    lastAttackTime = Time.time; // Met à jour le temps de la dernière attaque
-                }
-            }
+        if (distanceToPlayer <= attackRange)
+        {
+            AttackPlayer();
+        }
+        else if (distanceToPlayer <= detectionRange)
+        {
+            ChasePlayer();
         }
         else
         {
-            // Si le joueur n'est pas détecté, l'ennemi s'arrête
-            navMeshAgent.SetDestination(transform.position);
+            Patrol();
         }
+
+        // Synchronize speed with animation
+        animator.SetFloat("Speed", agent.velocity.magnitude);
+
+        // Appliquer la position du NavMeshAgent au transform
+        if (agent.remainingDistance > agent.stoppingDistance)
+        {
+            transform.position = agent.nextPosition;
+        }
+    }
+
+    void Patrol()
+    {
+        animator.SetBool("isWalking", true);
+        animator.SetBool("isAttacking", false);
+
+        patrolTimer -= Time.deltaTime;
+        if (patrolTimer <= 0)
+        {
+            SetNewPatrolTarget();
+            patrolTimer = patrolTime;
+        }
+
+        agent.SetDestination(patrolTarget);
+    }
+
+    void SetNewPatrolTarget()
+    {
+        patrolTarget = new Vector3(
+            transform.position.x + Random.Range(-10, 10),
+            transform.position.y,
+            transform.position.z + Random.Range(-10, 10)
+        );
+    }
+
+    void ChasePlayer()
+    {
+        animator.SetBool("isWalking", true);
+        animator.SetBool("isAttacking", false);
+        agent.SetDestination(player.position);
+    }
+
+    void AttackPlayer()
+    {
+        animator.SetBool("isWalking", false);
+        animator.SetBool("isAttacking", true);
+        agent.SetDestination(transform.position); // Stop moving to attack
     }
 }
