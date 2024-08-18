@@ -24,12 +24,17 @@ public class BulletScript : MonoBehaviour {
 
 		if(Physics.Raycast(transform.position, transform.forward,out hit, maxDistance, ~ignoreLayer)){
 			if(decalHitWall){
-				if(hit.transform.tag == "LevelPart"){
+				if(hit.transform.tag == "Ground"){
 					Instantiate(decalHitWall, hit.point + hit.normal * floatInfrontOfWall, Quaternion.LookRotation(hit.normal));
 					Destroy(gameObject);
 				}
 				if(hit.transform.tag == "Dummie"){
 					Instantiate(bloodEffect, hit.point, Quaternion.LookRotation(hit.normal));
+				 // Infliger des dégâts à l'ennemi
+                EnemyAI enemy = hit.transform.GetComponent<EnemyAI>();
+                if (enemy != null) {
+                    enemy.TakeDamage(10); // Par exemple, inflige 10 points de dégâts
+                }
 					Destroy(gameObject);
 				}
 			}		

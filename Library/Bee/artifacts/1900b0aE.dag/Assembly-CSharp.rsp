@@ -411,7 +411,8 @@
 "Assets/Flooded_Grounds/Scripts/FPSController/CharController_Motor.cs"
 "Assets/Flooded_Grounds/Scripts/FPSDisplay.cs"
 "Assets/Flooded_Grounds/Scripts/WaterFloat.cs"
-"Assets/Scrips/Animatorenemy.cs"
+"Assets/Scrips/Interact.cs"
+"Assets/Scrips/LifeBar.cs"
 "Assets/Scrips/PlayerFPS.cs"
 "Assets/Scrips/Waluigi.cs"
 -langversion:9.0

@@ -5,14 +5,18 @@ TagManager:
   serializedVersion: 2
   tags:
   - Ground
+  - SecondCamera
+  - BulletSpawn
+  - Weapon
+  - Dummie
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Weapon
   - Water
   - UI
-  - 
+  - Player
   - 
   - 
   - 
